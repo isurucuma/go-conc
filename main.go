@@ -36,9 +36,8 @@ func main() {
 
 	// ----------------------------------------Future----------------------
 
-	ctx, _ := context.WithCancel(context.Background())
+	ctx := context.Background()
 	future := patterns.BlockingFunction(ctx)
-	// cancel()
 	res, err := future.Result()
 	if err != nil {
 		fmt.Println("error: ", err)
