@@ -13,7 +13,7 @@ func Fanin[T any](channels []<-chan T) <-chan T {
 		go func(c <-chan T) {
 			defer wg.Done()
 			for val := range c {
-				out <- val
+				out <- val // here instead of just passing, we can do a heavy work
 			}
 		}(ch)
 	}
