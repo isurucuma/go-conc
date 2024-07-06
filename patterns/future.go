@@ -34,7 +34,7 @@ func (f *InnerFuture[T]) Result() (T, error) {
 	return f.res, f.err
 }
 
-func SlowFunction(ctx context.Context) Future[string] {
+func BlockingFunction(ctx context.Context) Future[string] {
 	resCh := make(chan string)
 	errCh := make(chan error)
 	go func() {

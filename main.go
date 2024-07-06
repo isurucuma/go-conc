@@ -2,44 +2,52 @@ package main
 
 import (
 	"conc/patterns"
+	"context"
 	"fmt"
+	"sync"
 )
 
 func main() {
 
-	// sourceChan := make(chan int)
-	// wg := &sync.WaitGroup{}
-	// go func() {
-	// 	defer close(sourceChan)
+	// ----------------------------------FanOut -> FanIn--------------------
 
-	// 	for i := 0; i < 100; i++ {
-	// 		sourceChan <- i
-	// 	}
-	// }()
+	sourceChan := make(chan int)
+	wg := &sync.WaitGroup{}
+	go func() {
+		defer close(sourceChan)
 
-	// chans := patterns.Fanout(sourceChan, 20)
-	// outChan := patterns.Fanin(chans)
+		for i := 0; i < 100; i++ {
+			sourceChan <- i
+		}
+	}()
 
-	// wg.Add(1)
-	// go func() {
-	// 	defer wg.Done()
-	// 	for val := range outChan {
-	// 		fmt.Printf("output value :%d\n", val)
-	// 	}
-	// }()
+	chans := patterns.Fanout(sourceChan, 20)
+	outChan := patterns.Fanin(chans)
 
-	// wg.Wait()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for val := range outChan {
+			fmt.Printf("output value :%d\n", val)
+		}
+	}()
 
-	// ctx, _ := context.WithCancel(context.Background())
-	// future := patterns.SlowFunction(ctx)
-	// // cancel()
-	// res, err := future.Result()
-	// if err != nil {
-	// 	fmt.Println("error: ", err)
-	// 	return
-	// }
+	wg.Wait()
 
-	// fmt.Println(res)
+	// ----------------------------------------Future----------------------
+
+	ctx, _ := context.WithCancel(context.Background())
+	future := patterns.BlockingFunction(ctx)
+	// cancel()
+	res, err := future.Result()
+	if err != nil {
+		fmt.Println("error: ", err)
+		return
+	}
+
+	fmt.Println(res)
+
+	// ----------------------------------------Sharded Map-----------------
 
 	shardedMap := patterns.NewShardedMap[int](5)
 
