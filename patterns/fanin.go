@@ -4,6 +4,9 @@ import (
 	"sync"
 )
 
+// Fanin is a function that merges multiple input channels into a single output channel.
+//
+// It takes a slice of input channels 'channels' and returns a single output channel.
 func Fanin[T any](channels []<-chan T) <-chan T {
 	out := make(chan T)
 
